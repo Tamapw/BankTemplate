@@ -29,3 +29,4 @@ $java -jar BankTemplate-1.00.jar
     - Example: print
   - stop - останавливает работу банка, запущенного раннее.
     - Example: stop
+
