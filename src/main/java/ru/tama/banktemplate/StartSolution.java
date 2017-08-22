@@ -30,6 +30,7 @@ public class StartSolution {
         System.out.println("Узнать информацию о доступных командах можно с помощью команды help.");
 
         StartedBankReader bankReader = new StartedBankReader();
+        bankReader.setDaemon(true);
         bankReader.start();
 
         CommandReader reader = new CommandReader();

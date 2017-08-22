@@ -212,7 +212,9 @@ public class CommandExecutor implements Runnable {
         }
 
         Bank.banks.forEach((key, value) -> System.out.printf(
-                "code: %s, name: %s | %s\n", key, value, Bank.startedBanks.contains(value) ? "ONLINE" : "OFFLINE"
+                "code: %s, name: %s | %s %s\n",
+                key, value, Bank.startedBanks.contains(value) ? "ONLINE" : "OFFLINE", Bank.bank != null && value.equals(Bank.bank.getName()) ? "!-YOU-!" : ""
+
         ));
     }
 

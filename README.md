@@ -13,6 +13,8 @@ $java -jar BankTemplate-1.00.jar
 
 После запуска приложения вам будет доступен ввод команд.
 Список команд:
+  - help - выводит информацию о доступных командах в системе.
+    - Example: help
   - create name - создаёт банк с именем name.
     - Example: create sbt
   - start name - запускает банк с именем name.
@@ -33,4 +35,5 @@ $java -jar BankTemplate-1.00.jar
     - Example: print -a
   - stop - останавливает работу банка, запущенного раннее.
     - Example: stop
+    
 
