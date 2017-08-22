@@ -19,6 +19,7 @@ public class CommandReader extends Thread {
     public void run() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             while (!interrupted()) {
+                System.out.println("---");
                 String[] input = reader.readLine().split(" ");
 
                 try {

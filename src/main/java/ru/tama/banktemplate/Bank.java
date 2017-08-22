@@ -29,6 +29,11 @@ public class Bank extends Thread {
     public volatile static Bank bank;
 
     /**
+     * Запущенные банки в системе.
+     */
+    public static List<String> startedBanks = new ArrayList<>();
+
+    /**
      * Имя запущенного банка.
      */
     private String name;
@@ -95,6 +100,14 @@ public class Bank extends Thread {
         TransferResponseReader transferResponseReader = new TransferResponseReader();
         transferResponseReader.start();
 
+
+        File startedBank = new File("bank" + File.separator + "started" + File.separator, name);
+        try {
+            startedBank.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         while (!interrupted()) {
             try {
                 sleep(300);
@@ -102,6 +115,8 @@ public class Bank extends Thread {
                 break;
             }
         }
+
+        startedBank.delete();
 
         transferRequestReader.interrupt();
         transferResponseReader.interrupt();
@@ -126,7 +141,7 @@ public class Bank extends Thread {
         for (String s : banksName) {
             String[] partsName = s.split("-");
             if (partsName.length != 2) {
-
+                continue;
             }
 
             String code = partsName[0];
@@ -134,6 +149,16 @@ public class Bank extends Thread {
 
             banks.put(code, name);
         }
+    }
+
+    public static void loadStartedBanks() {
+        File dir = new File("bank" + File.separator + "started" + File.separator);
+
+        startedBanks = new ArrayList<>();
+
+        String[] banksName = dir.list();
+
+        startedBanks.addAll(Arrays.asList(banksName));
     }
 
     /**
@@ -222,6 +247,9 @@ public class Bank extends Thread {
 
             //Оповещает каждый существующий банк о создании нового банка и вносит новый банк в папку banks.
             for (String bankName : allBanks) {
+                if (bankName.equals("started")) {
+                    continue;
+                }
                 File newFile = new File("bank" + File.separator + bankName + File.separator, newBankCode + "-" + name);
                 newFile.createNewFile();
             }

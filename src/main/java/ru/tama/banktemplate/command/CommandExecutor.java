@@ -58,6 +58,10 @@ public class CommandExecutor implements Runnable {
             case COMMAND_ADD_ACCOUNT_WITH_MONEY: {
                 addAccountWithMoney();
             } break;
+
+            case COMMAND_HELP: {
+                help();
+            }
         }
     }
 
@@ -83,6 +87,11 @@ public class CommandExecutor implements Runnable {
 
         if (Bank.bank != null) {
             System.out.println("На этом экцемпляре приложения банк уже запущен.");
+            return;
+        }
+
+        if (Bank.startedBanks.contains(name)) {
+            System.out.println("Банк с таким именем уже запущен в системе.");
             return;
         }
 
@@ -203,7 +212,7 @@ public class CommandExecutor implements Runnable {
         }
 
         Bank.banks.forEach((key, value) -> System.out.printf(
-                "code: %s, name: %s\n", key, value
+                "code: %s, name: %s | %s\n", key, value, Bank.startedBanks.contains(value) ? "ONLINE" : "OFFLINE"
         ));
     }
 
@@ -287,5 +296,19 @@ public class CommandExecutor implements Runnable {
         Bank.bank.getAllAccount().add(account);
 
         System.out.println("Добавлено.");
+    }
+
+    /**
+     * Выводит на экран все имеющиеся команды с их аргументами.
+     */
+    private void help() {
+        if (args.length != 1) {
+            System.out.printf("Некорректно введена команда");
+            return;
+        }
+
+        for (CommandType commandType : CommandType.values()) {
+            System.out.println(commandType);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package ru.tama.banktemplate;
 
 import ru.tama.banktemplate.command.CommandReader;
+import ru.tama.banktemplate.readers.StartedBankReader;
 
 import java.io.File;
 
@@ -19,10 +20,20 @@ public class StartSolution {
             dirBanks.mkdir();
         }
 
+        File dirStartedBanks = new File("bank" + File.separator + "started");
+        if (!dirStartedBanks.exists()) {
+            dirStartedBanks.mkdir();
+        }
 
         Bank.loadBanks();
 
+        System.out.println("Узнать информацию о доступных командах можно с помощью команды help.");
+
+        StartedBankReader bankReader = new StartedBankReader();
+        bankReader.start();
+
         CommandReader reader = new CommandReader();
         reader.start();
+
     }
 }

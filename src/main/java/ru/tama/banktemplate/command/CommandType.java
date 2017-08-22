@@ -21,7 +21,7 @@ public enum CommandType {
      * &emsp;  <i>name</i> - имя банка в системе.<br>
      * example: start sbt<br>
      */
-    COMMAND_START("start"),
+    COMMAND_START("start name - запускает банк с именем name."),
 
     /**
      * Остановка банка в системе, сохранение всех совершённых операций на диск.<br>
@@ -29,7 +29,7 @@ public enum CommandType {
      * <br>
      * example: stop<br>
      */
-    COMMAND_STOP("stop"),
+    COMMAND_STOP("stop - останавливает запущенный на этом экземпляре банк."),
 
     /**
      * Перевод между счетами. <br>
@@ -40,7 +40,7 @@ public enum CommandType {
      * &emsp;  <i>money</i> - количество денег, которые нужно перевести.<br>
      * example: transfer 13563-12 23623-1 500<br>
      */
-    COMMAND_TRANSFER("transfer"),
+    COMMAND_TRANSFER("transfer from to money - переводит средства money с счёта from на счёт to."),
 
     /**
      * Вывод всех лицевых счетов и их баланс на экран. Вначале выводятся лицевые счета пользователей, <br>
@@ -49,15 +49,15 @@ public enum CommandType {
      * <br>
      * example: print -a<br>
      */
-    COMMAND_PRINT_ACCOUNTS("print -a"),
+    COMMAND_PRINT_ACCOUNTS("print -a - выводит все счета запущенного банка."),
 
     /**
-     * Вывод список существующих банков в системе и их номера. <br>
+     * Вывод список существующих банков в системе, их номера и запущены ли они в данный момент.<br>
      * Формат команды: "print -b", т.е. с аргументом -b. <br>
      * <br>
      * example: print -b<br>
      */
-    COMMAND_PRINT_BANKS("print -b"),
+    COMMAND_PRINT_BANKS("print -b - выводит информацию о всех существующих банках."),
 
     /**
      * Создаёт банк в системе.<br>
@@ -65,7 +65,7 @@ public enum CommandType {
      * &emsp;  <i>name</i> - имя банка, который необходимо создать.<br>
      * example: create sbt<br>
      */
-    COMMAND_CREATE("create"),
+    COMMAND_CREATE("create name - создаёт банк с именем name."),
 
     /**
      * Выходит из программы. Останавливает банк, если таковой был запущен и сохраняет данные. <br>
@@ -73,7 +73,7 @@ public enum CommandType {
      * <br>
      * example: exit
      */
-    COMMAND_EXIT("exit"),
+    COMMAND_EXIT("exit - останавливает банк, если таковой был запущен и выходит из приложения."),
 
     /**
      * Добавляет новые пользовательские лицевые счета в банк. <br>
@@ -81,7 +81,7 @@ public enum CommandType {
      * &emsp;  <i>count</i> - количество счетов, которые нужно добавить. <br>
      * example: add -a 10
      */
-    COMMAND_ADD_ACCOUNTS("add -a"),
+    COMMAND_ADD_ACCOUNTS("add -a count - добавляет в банк count клиентских счетов с разным количеством денег."),
 
     /**
      * Добавляет новый пользовательский лицевой счет в банк, с указанной суммой на счету. <br>
@@ -89,7 +89,12 @@ public enum CommandType {
      * &emsp;  <i>money</i> - сумма денег, которая должна быть на новом счёте.. <br>
      * example: add -p 1231
      */
-    COMMAND_ADD_ACCOUNT_WITH_MONEY("add -p");
+    COMMAND_ADD_ACCOUNT_WITH_MONEY("add -p money - добавляет в банк один клиентский счёт с деньгами в количестве money."),
+
+    /**
+     * Выводит все доступные команды и краткую информацию для них.
+     */
+    COMMAND_HELP("help - краткая информация о доступных командах.");
 
 
     private String description;
@@ -163,6 +168,10 @@ public enum CommandType {
                         throw new IllegalArgumentException("Передан несуществующий аргумент команды add");
                     }
                 }
+            } break;
+
+            case "help": {
+                commandType = COMMAND_HELP;
             } break;
 
             default: {
