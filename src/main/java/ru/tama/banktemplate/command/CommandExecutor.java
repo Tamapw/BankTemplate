@@ -246,7 +246,7 @@ public class CommandExecutor implements Runnable {
             return;
         }
 
-        int count = Integer.parseInt(args[1]);
+        int count = Integer.parseInt(args[2]);
         for (int i = 0; i < count; i++) {
             PersonalAccount account = new PersonalAccount(String.valueOf((i + 1) * 1000));
             Bank.bank.getPersonalAccounts().add(account);
