@@ -343,7 +343,7 @@ public class Bank extends Thread {
     private boolean transferFromAnotherBank(PaymentDocument document) {
         //счёт в документе хранится в виде "id-code". "123-2" означает - лицевой счёт 123 в банке под номером 2.
         String bankName = banks.get(document.getFrom().split("-")[1]);
-        String dirResponse = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sResponse%1$s%3$s:%4$s:%5$s",
+        String dirResponse = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sResponse%1$s%3$s_%4$s_%5$s.transfer",
                 File.separator, bankName, document.getFrom(), document.getTo(), document.getAmount());
         //Ищет аккаунт банка, деньги с которого необходимо снять.
         Optional<BankAccount> bankAccount = bankAccounts
@@ -401,7 +401,7 @@ public class Bank extends Thread {
     private boolean transferToAnotherBank(PaymentDocument document) {
         //счёт в документе хранится в виде "id-code". "123-2" означает - лицевой счёт 123 в банке под номером 2.
         String bankName = banks.get(document.getTo().split("-")[1]);
-        String dirRequest = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sRequest%1$s%3$s:%4$s:%5$s",
+        String dirRequest = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sRequest%1$s%3$s_%4$s_%5$s.transfer",
                 File.separator, bankName, document.getFrom(), document.getTo(), document.getAmount());
         //Ищет аккаунт банка, счет которого необходимо пополнить.
         Optional<BankAccount> bankAccount = bankAccounts
@@ -474,7 +474,7 @@ public class Bank extends Thread {
      */
     private boolean transferInAnotherBanks(PaymentDocument document) {
         String bankName = banks.get(document.getFrom().split("-")[1]);
-        String dirRequest = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sRequest%1$s%3$s:%4$s:%5$s",
+        String dirRequest = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sRequest%1$s%3$s_%4$s_%5$s.transfer",
                 File.separator, bankName, document.getFrom(), document.getTo(), document.getAmount());
         document.setAnotherBank(true);
         writeObj(dirRequest, document);
@@ -492,9 +492,9 @@ public class Bank extends Thread {
                 .findFirst()
                 .getAsLong();
 
-        personalAccounts.forEach(acc -> System.out.printf("id: %s, money: %s\n", acc.getId() + ":" + code, acc.getMoney()));
+        personalAccounts.forEach(acc -> System.out.printf("id: %s, money: %s\n", acc.getId() + "-" + code, acc.getMoney()));
         System.out.println();
-        bankAccounts.forEach(acc -> System.out.printf("id: %s, bank: %s money: %s\n", acc.getId() + ":" + code, acc.getName(), acc.getMoney()));
+        bankAccounts.forEach(acc -> System.out.printf("id: %s, bank: %s money: %s\n", acc.getId() + "-" + code, acc.getName(), acc.getMoney()));
     }
 
     private Object readObj(String path) {

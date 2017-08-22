@@ -19,6 +19,7 @@ public class StartSolution {
             dirBanks.mkdir();
         }
 
+
         Bank.loadBanks();
 
         CommandReader reader = new CommandReader();
