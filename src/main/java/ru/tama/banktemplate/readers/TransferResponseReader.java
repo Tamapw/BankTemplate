@@ -15,8 +15,8 @@ public class TransferResponseReader extends Thread {
     @Override
     public void run() {
         while (!interrupted()) {
-            File responseDir = new File("bank/" + Bank.bank.getName() + "/PaymentDocuments/Response");
-            String dirResponse = "bank/" + Bank.bank.getName() + "/PaymentDocuments/Response/";
+            File responseDir = new File("bank" + File.separator + Bank.bank.getName() + File.separator + "PaymentDocuments" + File.separator + "Response");
+            String dirResponse = "bank" + File.separator + Bank.bank.getName() + File.separator + "PaymentDocuments" + File.separator + "Response" + File.separator;
 
             File[] dirs = responseDir.listFiles();
 

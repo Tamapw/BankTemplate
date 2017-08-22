@@ -22,7 +22,7 @@ public class CommandReader extends Thread {
                 String[] input = reader.readLine().split(" ");
 
                 try {
-                    Thread executor = new Thread(new CommandExecutor(input[0], input));
+                    Thread executor = new Thread(new CommandExecutor(input));
                     executor.start();
                     executor.join();
 

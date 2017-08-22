@@ -6,8 +6,10 @@ package ru.tama.banktemplate.command;
  * <li>{@link #COMMAND_START}</li>
  * <li>{@link #COMMAND_STOP}</li>
  * <li>{@link #COMMAND_TRANSFER}</li>
- * <li>{@link #COMMAND_ADD}</li>
- * <li>{@link #COMMAND_PRINT}</li>
+ * <li>{@link #COMMAND_ADD_ACCOUNTS}</li>
+ * <li>{@link #COMMAND_ADD_ACCOUNT_WITH_MONEY}</li>
+ * <li>{@link #COMMAND_PRINT_ACCOUNTS}</li>
+ * <li>{@link #COMMAND_PRINT_BANKS}</li>
  * <li>{@link #COMMAND_EXIT}</li>
  *
  * @author tama
@@ -20,6 +22,7 @@ public enum CommandType {
      * example: start sbt<br>
      */
     COMMAND_START("start"),
+
     /**
      * Остановка банка в системе, сохранение всех совершённых операций на диск.<br>
      * Формат команды: "stop", т.е. без аргументов.<br>
@@ -27,6 +30,7 @@ public enum CommandType {
      * example: stop<br>
      */
     COMMAND_STOP("stop"),
+
     /**
      * Перевод между счетами. <br>
      * Счет являет собой: уникальный id в банке-номер банка. "1234-18", где 1234 - номер счёта в банке 18.<br>
@@ -37,14 +41,24 @@ public enum CommandType {
      * example: transfer 13563-12 23623-1 500<br>
      */
     COMMAND_TRANSFER("transfer"),
+
     /**
      * Вывод всех лицевых счетов и их баланс на экран. Вначале выводятся лицевые счета пользователей, <br>
      * затем лицевые счета банков(корреспондетские счета).<br>
-     * Формат команды "print", т.е. без аргументов.<br>
+     * Формат команды "print -a", т.е. с аргументом -a.<br>
      * <br>
-     * example: print<br>
+     * example: print -a<br>
      */
-    COMMAND_PRINT("print"),
+    COMMAND_PRINT_ACCOUNTS("print -a"),
+
+    /**
+     * Вывод список существующих банков в системе и их номера. <br>
+     * Формат команды: "print -b", т.е. с аргументом -b. <br>
+     * <br>
+     * example: print -b<br>
+     */
+    COMMAND_PRINT_BANKS("print -b"),
+
     /**
      * Создаёт банк в системе.<br>
      * Формат команды: "create <i>name</i>", где
@@ -52,6 +66,7 @@ public enum CommandType {
      * example: create sbt<br>
      */
     COMMAND_CREATE("create"),
+
     /**
      * Выходит из программы. Останавливает банк, если таковой был запущен и сохраняет данные. <br>
      * Формат команды: "exit", т.е. без аргументов. <br>
@@ -59,13 +74,23 @@ public enum CommandType {
      * example: exit
      */
     COMMAND_EXIT("exit"),
+
     /**
      * Добавляет новые пользовательские лицевые счета в банк. <br>
-     * Формат команды: "add <i>count</i>", где <br>
+     * Формат команды: "add -a <i>count</i>", где <br>
      * &emsp;  <i>count</i> - количество счетов, которые нужно добавить. <br>
-     * example: add 10
+     * example: add -a 10
      */
-    COMMAND_ADD("add");
+    COMMAND_ADD_ACCOUNTS("add -a"),
+
+    /**
+     * Добавляет новый пользовательский лицевой счет в банк, с указанной суммой на счету. <br>
+     * Формат команды: "add -p <i>money</i>", где <br>
+     * &emsp;  <i>money</i> - сумма денег, которая должна быть на новом счёте.. <br>
+     * example: add -p 1231
+     */
+    COMMAND_ADD_ACCOUNT_WITH_MONEY("add -p");
+
 
     private String description;
 
@@ -73,7 +98,8 @@ public enum CommandType {
         this.description = description;
     }
 
-    public static CommandType parse(String command) {
+    public static CommandType parse(String... args) {
+        String command = args[0];
         CommandType commandType = null;
 
         switch (command) {
@@ -94,7 +120,24 @@ public enum CommandType {
             } break;
 
             case "print": {
-                commandType = COMMAND_PRINT;
+                if (args.length < 2) {
+                    throw new IllegalArgumentException("Не передан аргумент команды print");
+                }
+
+                String argument = args[1];
+                switch (argument) {
+                    case "-a": {
+                        commandType = COMMAND_PRINT_ACCOUNTS;
+                    } break;
+
+                    case "-b": {
+                        commandType = COMMAND_PRINT_BANKS;
+                    } break;
+
+                    default: {
+                        throw new IllegalArgumentException("Передан не существующий аргумент команды print: " + argument);
+                    }
+                }
             } break;
 
             case "exit": {
@@ -102,7 +145,28 @@ public enum CommandType {
             } break;
 
             case "add": {
-                commandType = COMMAND_ADD;
+                if (args.length < 2) {
+                    throw new IllegalArgumentException("Не передана аргумент команды add");
+                }
+
+                String argument = args[1];
+                switch (argument) {
+                    case "-a": {
+                        commandType = COMMAND_ADD_ACCOUNTS;
+                    } break;
+
+                    case "-p": {
+                        commandType = COMMAND_ADD_ACCOUNT_WITH_MONEY;
+                    } break;
+
+                    default: {
+                        throw new IllegalArgumentException("Передан несуществующий аргумент команды add");
+                    }
+                }
+            } break;
+
+            default: {
+                throw new IllegalArgumentException("Передана не существующая команда.");
             }
         }
 

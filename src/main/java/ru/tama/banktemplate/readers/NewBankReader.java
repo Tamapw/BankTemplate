@@ -15,7 +15,7 @@ public class NewBankReader extends Thread {
     @Override
     public void run() {
         while (!interrupted()) {
-            File bank = new File("bank/" + Bank.bank.getName() + "/");
+            File bank = new File("bank" + File.separator + Bank.bank.getName() + File.separator);
 
             File[] dirs = bank.listFiles();
 

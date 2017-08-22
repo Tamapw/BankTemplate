@@ -11,13 +11,14 @@ import ru.tama.banktemplate.account.PersonalAccount;
  * @author tama
  */
 public class CommandExecutor implements Runnable {
-    private String command;
     private String[] args;
 
     public void run() {
-        CommandType commandType = CommandType.parse(command);
-        if (commandType == null) {
-            System.out.println("Некорректная команда.");
+        CommandType commandType;
+        try {
+            commandType = CommandType.parse(args);
+        } catch (IllegalArgumentException ex) {
+            System.out.printf(ex.getMessage() + "\n");
             return;
         }
 
@@ -38,22 +39,29 @@ public class CommandExecutor implements Runnable {
                 transfer();
             } break;
 
-            case COMMAND_PRINT: {
-                print();
+            case COMMAND_PRINT_ACCOUNTS: {
+                printAccounts();
+            } break;
+
+            case COMMAND_PRINT_BANKS: {
+                printBanks();
             } break;
 
             case COMMAND_EXIT: {
                 exit();
             }
 
-            case COMMAND_ADD: {
-                add();
+            case COMMAND_ADD_ACCOUNTS: {
+                addAccounts();
             }
+
+            case COMMAND_ADD_ACCOUNT_WITH_MONEY: {
+                addAccountWithMoney();
+            } break;
         }
     }
 
-    CommandExecutor(String command, String... args) {
-        this.command = command;
+    CommandExecutor(String... args) {
         this.args = args;
     }
 
@@ -121,8 +129,9 @@ public class CommandExecutor implements Runnable {
             return;
         }
 
-        Bank.createBank(args[1]);
-        System.out.println("Создано.");
+        if (Bank.createBank(args[1])) {
+            System.out.println("Создано.");
+        }
     }
 
     /**
@@ -167,10 +176,10 @@ public class CommandExecutor implements Runnable {
 
     /**
      * Выводит на экран счета банка. <br>
-     * Аргументы команды должны соответствовать команде {@link CommandType#COMMAND_PRINT}
+     * Аргументы команды должны соответствовать команде {@link CommandType#COMMAND_PRINT_ACCOUNTS}
      */
-    private void print() {
-        if (args.length != 1) {
+    private void printAccounts() {
+        if (args.length != 2) {
             System.out.println("Некорректное количество аргументов.");
             return;
         }
@@ -181,6 +190,21 @@ public class CommandExecutor implements Runnable {
         }
 
         Bank.bank.print();
+    }
+
+    /**
+     * Выводит на экран список всех банков. <br>
+     * Аргументы команды должны соответствовать команде {@link CommandType#COMMAND_PRINT_BANKS}
+     */
+    private void printBanks() {
+        if (args.length != 2) {
+            System.out.println("Некорректное количество аргументов.");
+            return;
+        }
+
+        Bank.banks.forEach((key, value) -> System.out.printf(
+                "code: %s, name: %s\n", key, value
+        ));
     }
 
     /**
@@ -209,10 +233,10 @@ public class CommandExecutor implements Runnable {
 
     /**
      * Добавляет пользовательские счета в банк. <br>
-     * Аргументы команды должны соответствовать команде {@link CommandType#COMMAND_ADD}
+     * Аргументы команды должны соответствовать команде {@link CommandType#COMMAND_ADD_ACCOUNTS}
      */
-    private void add() {
-        if (args.length != 2) {
+    private void addAccounts() {
+        if (args.length != 3) {
             System.out.println("Некорректное количество аргументов.");
             return;
         }
@@ -228,6 +252,40 @@ public class CommandExecutor implements Runnable {
             Bank.bank.getPersonalAccounts().add(account);
             Bank.bank.getAllAccount().add(account);
         }
+        System.out.println("Добавлено.");
+    }
+
+    /**
+     * Добавляет пользовательский счёт в банк с определённым количеством денег. <br>
+     * Аргументы команды должны соответствовать команде {@link CommandType#COMMAND_ADD_ACCOUNT_WITH_MONEY}
+     */
+    private void addAccountWithMoney() {
+        if (args.length != 3) {
+            System.out.println("Некорректное количество аргументов.");
+            return;
+        }
+
+        if (Bank.bank == null) {
+            System.out.println("На этом экземпляре не запущен банк.");
+            return;
+        }
+
+        String money = args[2];
+
+        try {
+            double correctMoney = Double.parseDouble(money);
+            if (correctMoney < 0) {
+                System.out.printf("Сумма денег не может быть отрицательной.");
+            }
+        } catch (NumberFormatException ex) {
+            System.out.printf("Некорректно введена сумма денег.");
+            return;
+        }
+
+        PersonalAccount account = new PersonalAccount(money);
+        Bank.bank.getPersonalAccounts().add(account);
+        Bank.bank.getAllAccount().add(account);
+
         System.out.println("Добавлено.");
     }
 }

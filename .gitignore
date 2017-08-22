@@ -1,6 +1,4 @@
 .idea/
 /target/
-src/test/
 *.iml
 Task.txt
-pom.xml

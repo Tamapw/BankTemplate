@@ -14,8 +14,8 @@ public class TransferRequestReader extends Thread {
     @Override
     public void run() {
         while (!interrupted()) {
-            File requestDir = new File("bank/" + Bank.bank.getName() + "/PaymentDocuments/Request");
-            String dirRequest = "bank/" + Bank.bank.getName() + "/PaymentDocuments/Request/";
+            File requestDir = new File("bank" + File.separator + Bank.bank.getName() + File.separator + "PaymentDocuments" + File.separator + "Request");
+            String dirRequest = "bank" + File.separator + Bank.bank.getName() + File.separator + "PaymentDocuments" + File.separator + "Request" + File.separator;
 
             File[] dirs = requestDir.listFiles();
 

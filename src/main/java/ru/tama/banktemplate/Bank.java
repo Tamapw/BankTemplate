@@ -119,7 +119,7 @@ public class Bank extends Thread {
      * Загружает все банки системы в карту {@link Bank#banks}
      */
     public static void loadBanks() {
-        File dir = new File("bank/banks/");
+        File dir = new File("bank" + File.separator + "banks" + File.separator);
 
         String[] banksName = dir.list();
 
@@ -141,16 +141,16 @@ public class Bank extends Thread {
      */
     private void load() {
         String dirPersonalAccounts = String.format(
-                "bank/%s/PersonalAccounts/accounts.ser",
-                name
+                "bank%1$s%2$s%1$sPersonalAccounts%1$saccounts.ser",
+                File.separator, name
         );
         String dirBankAccounts = String.format(
-                "bank/%s/BankAccounts/accounts.ser",
-                name
+                "bank%1$s%2$s%1$sBankAccounts%1$saccounts.ser",
+                File.separator, name
         );
         String dirPaymentDocuments = String.format(
-                "bank/%s/PaymentDocuments/documents.ser",
-                name
+                "bank%1$s%2$s%1$sPaymentDocuments%1$sdocuments.ser",
+                File.separator, name
         );
 
 
@@ -175,16 +175,16 @@ public class Bank extends Thread {
      */
     private void save() {
         String dirPersonalAccounts = String.format(
-                "bank/%s/PersonalAccounts/accounts.ser",
-                name
+                "bank%1$s%2$s%1$sPersonalAccounts%1$saccounts.ser",
+                File.separator, name
         );
         String dirBankAccounts = String.format(
-                "bank/%s/BankAccounts/accounts.ser",
-                name
+                "bank%1$s%2$s%1$sBankAccounts%1$saccounts.ser",
+                File.separator, name
         );
         String dirPaymentDocuments = String.format(
-                "bank/%s/PaymentDocuments/documents.ser",
-                name
+                "bank%1$s%2$s%1$sPaymentDocuments%1$sdocuments.ser",
+                File.separator, name
         );
 
         writeObj(dirPersonalAccounts, personalAccounts);
@@ -196,13 +196,14 @@ public class Bank extends Thread {
      * Создаёт банк и все соответствующие банку папки в системе.
      *
      * @param name имя банка, который необходимо создать.
+     * @return true, если банк был создан, иначе false.
      */
-    public static void createBank(String name) {
+    public static boolean createBank(String name) {
         loadBanks();
 
         if (banks.containsValue(name)) {
             System.out.println("Банк с таким именем уже существует.");
-            return;
+            return false;
         }
 
         try {
@@ -217,11 +218,11 @@ public class Bank extends Thread {
                         .getAsLong() + 1;
             }
 
-            String[] allBanks = new File("bank/").list();
+            String[] allBanks = new File("bank" + File.separator).list();
 
             //Оповещает каждый существующий банк о создании нового банка и вносит новый банк в папку banks.
             for (String bankName : allBanks) {
-                File newFile = new File("bank/" + bankName + "/", newBankCode + "-" + name);
+                File newFile = new File("bank" + File.separator + bankName + File.separator, newBankCode + "-" + name);
                 newFile.createNewFile();
             }
 
@@ -229,12 +230,12 @@ public class Bank extends Thread {
             banks.put(String.valueOf(newBankCode), name);
 
             //Создаёт все нужные папки для нового банка.
-            File newDir = new File("bank/" + name);
-            File personalAccounts = new File("bank/" + name + "/", "PersonalAccounts");
-            File bankAccounts = new File("bank/" + name + "/", "BankAccounts");
-            File paymentDocuments = new File("bank/" + name + "/", "PaymentDocuments");
-            File paymentDocumentsRequest = new File("bank/" + name + "/", "PaymentDocuments/Request");
-            File paymentDocumentsResponse = new File("bank/" + name + "/", "PaymentDocuments/Response");
+            File newDir = new File("bank" + File.separator + name);
+            File personalAccounts = new File("bank" + File.separator + name + File.separator, "PersonalAccounts");
+            File bankAccounts = new File("bank" + File.separator + name + File.separator, "BankAccounts");
+            File paymentDocuments = new File("bank" + File.separator + name + File.separator, "PaymentDocuments");
+            File paymentDocumentsRequest = new File("bank" + File.separator + name + File.separator, "PaymentDocuments" + File.separator + "Request");
+            File paymentDocumentsResponse = new File("bank" + File.separator + name + File.separator, "PaymentDocuments" + File.separator + "Response");
 
             newDir.mkdir();
             personalAccounts.mkdir();
@@ -245,6 +246,8 @@ public class Bank extends Thread {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
+        return true;
     }
 
     /**
@@ -340,7 +343,8 @@ public class Bank extends Thread {
     private boolean transferFromAnotherBank(PaymentDocument document) {
         //счёт в документе хранится в виде "id-code". "123-2" означает - лицевой счёт 123 в банке под номером 2.
         String bankName = banks.get(document.getFrom().split("-")[1]);
-        String dirResponse = "bank/" + bankName + "/PaymentDocuments/Response/" + document.getFrom() + ":" + document.getTo() + ":" + document.getAmount();
+        String dirResponse = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sResponse%1$s%3$s:%4$s:%5$s",
+                File.separator, bankName, document.getFrom(), document.getTo(), document.getAmount());
         //Ищет аккаунт банка, деньги с которого необходимо снять.
         Optional<BankAccount> bankAccount = bankAccounts
                 .stream()
@@ -397,7 +401,8 @@ public class Bank extends Thread {
     private boolean transferToAnotherBank(PaymentDocument document) {
         //счёт в документе хранится в виде "id-code". "123-2" означает - лицевой счёт 123 в банке под номером 2.
         String bankName = banks.get(document.getTo().split("-")[1]);
-        String dirRequest = "bank/" + bankName + "/PaymentDocuments/Request/" + document.getFrom() + ":" + document.getTo() + ":" + document.getAmount();
+        String dirRequest = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sRequest%1$s%3$s:%4$s:%5$s",
+                File.separator, bankName, document.getFrom(), document.getTo(), document.getAmount());
         //Ищет аккаунт банка, счет которого необходимо пополнить.
         Optional<BankAccount> bankAccount = bankAccounts
                 .stream()
@@ -469,7 +474,8 @@ public class Bank extends Thread {
      */
     private boolean transferInAnotherBanks(PaymentDocument document) {
         String bankName = banks.get(document.getFrom().split("-")[1]);
-        String dirRequest = "bank/" + bankName + "/PaymentDocuments/Request/" + document.getFrom() + ":" + document.getTo() + ":" + document.getAmount();
+        String dirRequest = String.format("bank%1$s%2$s%1$sPaymentDocuments%1$sRequest%1$s%3$s:%4$s:%5$s",
+                File.separator, bankName, document.getFrom(), document.getTo(), document.getAmount());
         document.setAnotherBank(true);
         writeObj(dirRequest, document);
         return true;
@@ -479,9 +485,16 @@ public class Bank extends Thread {
      * Выводит на экран все счета конкретного банка. Вначале выводятся клиентские счета, затем корреспондентские.
      */
     public void print() {
-        personalAccounts.forEach(System.out::println);
+        long code = banks.entrySet()
+                .stream()
+                .filter(bank -> bank.getValue().equals(name))
+                .mapToLong(entry -> Long.parseLong(entry.getKey()))
+                .findFirst()
+                .getAsLong();
+
+        personalAccounts.forEach(acc -> System.out.printf("id: %s, money: %s\n", acc.getId() + ":" + code, acc.getMoney()));
         System.out.println();
-        bankAccounts.forEach(System.out::println);
+        bankAccounts.forEach(acc -> System.out.printf("id: %s, bank: %s money: %s\n", acc.getId() + ":" + code, acc.getName(), acc.getMoney()));
     }
 
     private Object readObj(String path) {

@@ -14,7 +14,7 @@ public class StartSolution {
             dirBank.mkdir();
         }
 
-        File dirBanks = new File("bank/banks");
+        File dirBanks = new File("bank" + File.separator + "banks");
         if (!dirBanks.exists()) {
             dirBanks.mkdir();
         }
