@@ -25,7 +25,9 @@ public class TransferRequestReader extends Thread {
                     PaymentDocument document = (PaymentDocument) readObj(dirRequest + dir.getName());
                     //Т.к. платёжный документ был составлен не в нашем банке, а получен из вне,
                     // то isOurDocument метода transfer выставляется в false.
-                    Bank.bank.transfer(document, false);
+                    if (document != null) {
+                        Bank.bank.transfer(document, false);
+                    }
 
                     dir.delete();
                 }

@@ -265,12 +265,47 @@ public class Bank extends Thread {
             File paymentDocumentsRequest = new File("bank" + File.separator + name + File.separator, "PaymentDocuments" + File.separator + "Request");
             File paymentDocumentsResponse = new File("bank" + File.separator + name + File.separator, "PaymentDocuments" + File.separator + "Response");
 
-            newDir.mkdir();
-            personalAccounts.mkdir();
-            bankAccounts.mkdir();
-            paymentDocuments.mkdir();
-            paymentDocumentsRequest.mkdir();
-            paymentDocumentsResponse.mkdir();
+            if (!newDir.exists()) {
+                if (!newDir.mkdir()) {
+                    System.out.println("Папка " + newDir + " не создана.");
+                    return false;
+                }
+            }
+
+            if (!personalAccounts.exists()) {
+                if (!personalAccounts.mkdir()) {
+                    System.out.println("Папка " + personalAccounts + " не создана.");
+                    return false;
+                }
+            }
+
+            if (!bankAccounts.exists()) {
+                if (!bankAccounts.mkdir()) {
+                    System.out.println("Папка " + bankAccounts + " не создана.");
+                    return false;
+                }
+            }
+
+            if (!paymentDocuments.exists()) {
+                if (!paymentDocuments.mkdir()) {
+                    System.out.println("Папка " + paymentDocuments + " не создана.");
+                    return false;
+                }
+            }
+
+            if (!paymentDocumentsRequest.exists()) {
+                if (!paymentDocumentsRequest.mkdir()) {
+                    System.out.println("Папка " + paymentDocumentsRequest + " не создана.");
+                    return false;
+                }
+            }
+
+            if (!paymentDocumentsResponse.exists()) {
+                if (!paymentDocumentsResponse.mkdir()) {
+                    System.out.println("Папка " + paymentDocumentsResponse + " не создана.");
+                    return false;
+                }
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
